@@ -1,0 +1,83 @@
+version: '2'
+
+services:
+  zookeeper-server:
+    image: 'bitnami/zookeeper:latest'
+    networks:
+      positive-net:
+        ipv4_address: "10.0.100.22"
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka-server:
+    build: kafka/
+    container_name: "positive-kafka"
+    networks:
+      positive-net:
+        ipv4_address: "10.0.100.25"
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_ACTION=start-kafka
+    depends_on:
+      - zookeeper-server
+
+  elasticsearch:
+      image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+      container_name: "positive-elasticsearch"
+      ports:
+        - 9200:9200
+      environment:
+        discovery.type: single-node
+      volumes:
+        - elasticsearch:/usr/share/elasticsearch/data/
+      networks:
+        positive-net:
+          ipv4_address: "10.0.100.51"
+
+  spark:
+      build: Spark/
+      container_name: "positive-spark"
+      depends_on:
+        - "kafka-server"
+        - "elasticsearch"
+      networks:
+        positive-net:
+          ipv4_address: "10.0.100.19"
+  kibana:
+      image: docker.elastic.co/kibana/kibana:7.8.0
+      container_name: "positive-kibana"
+      ports:
+        - 5601:5601
+      environment:
+        ELASTICSEARCH_URL: http://elasticsearch:9200
+        ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+        MONITORING_ENABLED: "false"
+      networks:
+        - positive-net
+
+  positive-ingestor:
+      build: positive-ingestor/
+      container_name: "positive-ingestor"
+      ports: 
+        - 9000:9000
+      depends_on:
+        - "kafka-server"
+      environment:
+        - kafka= 10.0.100.25:9092
+      networks:
+        positive-net:
+          ipv4_address: "10.0.100.90"
+        
+
+
+volumes:
+  elasticsearch:
+
+networks:
+  positive-net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.100.0/24
