@@ -48,7 +48,7 @@ public class PositiveSpark implements Serializable {
 	public PositiveSpark() {
 		spark = SparkProxy.getInstance();
 		streamingContext = new JavaStreamingContext(JavaSparkContext.fromSparkContext(spark.getSparkContext()),
-				Durations.seconds(15));
+				Durations.seconds(4));
 		// kafkaProducer = new
 		// KafkaProducer<>(SparkConfigurer.getKafkaStreamingProducerConfig());
 		startStreamProcessing();
