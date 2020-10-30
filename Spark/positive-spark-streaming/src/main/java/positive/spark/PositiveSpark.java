@@ -99,6 +99,7 @@ public class PositiveSpark implements Serializable {
 				"userId");
 		avgNegativeAndPositive = avgNegativeAndPositive
 				.join(dataset.drop("message", "timestamp", "positivity", "negativity"), "userId");
+		avgNegativeAndPositive = avgNegativeAndPositive.distinct();
 		avgNegativeAndPositive.show();
 
 		avgNegativeAndPositive.foreach(x -> {
