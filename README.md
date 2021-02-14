@@ -15,7 +15,7 @@ Le tecnologie che sono state usate in questo progetto sono:
 | **Data visualization** | [Kibana](https://www.elastic.co/kibana) |
 
 ## Architettura
-<br><img src="./docs/img/ArchitetturaPositive.png"/>
+<br><img src="./docs/imgs/Architettura-Positive.png"/>
 
 ## Requisiti
 1. Docker - [install](https://docs.docker.com/engine/install/)
